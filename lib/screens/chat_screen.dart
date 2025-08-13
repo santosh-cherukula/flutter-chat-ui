@@ -361,42 +361,40 @@ class _Composer extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   final VoidCallback onAttach;
-
   const _Composer({required this.controller, required this.onSend, required this.onAttach});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
-        color: cs.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 6, 8, 12),
         child: Row(
           children: [
             IconButton(onPressed: onAttach, icon: const Icon(Icons.attach_file)),
             Expanded(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 140),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: cs.surface.withOpacity(.4),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: cs.outlineVariant.withOpacity(.3)),
+                ),
                 child: TextField(
                   controller: controller,
-                  minLines: 1,
                   maxLines: null,
-                  textInputAction: TextInputAction.newline,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Message',
-                    filled: true,
-                    fillColor: cs.surfaceVariant.withOpacity(0.5),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                    contentPadding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+                    border: InputBorder.none,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 6),
-            FilledButton.tonal(
+            const SizedBox(width: 8),
+            FloatingActionButton.small(
               onPressed: onSend,
-              style: FilledButton.styleFrom(padding: const EdgeInsets.all(12), shape: const CircleBorder()),
-              child: const Icon(Icons.send),
+              backgroundColor: cs.primary,
+              child: const Icon(Icons.send, color: Colors.white),
             ),
           ],
         ),

@@ -1,37 +1,65 @@
+import 'package:chatter/main.dart';
 import 'package:flutter/material.dart';
+import 'package:chatter/themes/app_theme.dart';
+import 'package:chatter/widgets/glass_card.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          const ListTile(
-            leading: CircleAvatar(child: Icon(Icons.person)),
-            title: Text('Santosh'),
-            subtitle: Text('Edit profile'),
-            trailing: Icon(Icons.edit),
+          GlassCard(
+            child: ListTile(
+              leading: const CircleAvatar(child: Icon(Icons.person)),
+              title: const Text('Santosh'),
+              subtitle: const Text('Edit profile'),
+              trailing: const Icon(Icons.edit),
+            ),
           ),
-          const Divider(),
-          SwitchListTile(
-            secondary: const Icon(Icons.dark_mode),
-            title: const Text('Dark mode (system follows by default)'),
-            value: Theme.of(context).brightness == Brightness.dark,
-            onChanged: (_) {
-              // We’ll wire theme switching in Phase 7
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('We’ll add theme toggle in a later phase.'), backgroundColor: cs.primary),
-              );
-            },
+          const SizedBox(height: 12),
+          GlassCard(
+            child: Column(
+              children: [
+                SwitchListTile(
+                  title: const Text('Dark mode'),
+                  value: Theme.of(context).brightness == Brightness.dark,
+                  onChanged: (v) {
+                    // Theme switching would typically be handled by a state management solution
+                    // or by rebuilding the MaterialApp with the new theme
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: const Text('App lock'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: const Icon(Icons.notifications_none),
+                  title: const Text('Notifications'),
+                  onTap: () {},
+                ),
+                ListTile(
+                  leading: const Icon(Icons.info_outline),
+                  title: const Text('About'),
+                  onTap: () {},
+                ),
+              ],
+            ),
           ),
-          const ListTile(leading: Icon(Icons.notifications), title: Text('Notifications')),
-          const ListTile(leading: Icon(Icons.lock), title: Text('Privacy')),
-          const ListTile(leading: Icon(Icons.info_outline), title: Text('About')),
+          const SizedBox(height: 12),
+          Center(
+            child: TextButton(
+              onPressed: () {},
+              child: const Text('Log out',
+                  style: TextStyle(color: Color(0xFFFF5252))),
+            ),
+          ),
         ],
       ),
     );

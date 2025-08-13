@@ -1,50 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AppTheme {
-  static const _primaryGradient = LinearGradient(
-    colors: [Color(0xFF7F5AF0), Color(0xFF6246EA)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+final class AppTheme {
+  static const seed = Color(0xFF7F5AF0);
 
-  static final light = ThemeData(
+  static ThemeData light = ThemeData(
+  useMaterial3: true,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: seed,
     brightness: Brightness.light,
-    textTheme: GoogleFonts.poppinsTextTheme(),
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF7F5AF0),
-      brightness: Brightness.light,
-    ),
-    scaffoldBackgroundColor: Colors.grey[50],
-    cardTheme: CardThemeData(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      elevation: 2,
-    ),
-  );
+    surface: const Color(0xFFF5F7FA),
+    onSurface: Colors.black,
+  ),
+  scaffoldBackgroundColor: const Color(0xFFF5F7FA),
 
-  static final dark = ThemeData(
-    brightness: Brightness.dark,
-    textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
+  // 🟣 Glass card that pops in light mode
+  cardTheme: CardThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(24),
+      side: const BorderSide(color: Color(0xFFD3D3D3), width: 0.5), // subtle outline
+    ),
+    elevation: 0,
+    color: Colors.white.withOpacity(.95), // more opaque glass
+  ),
+
+  listTileTheme: const ListTileThemeData(iconColor: Colors.black87),
+);
+
+  static ThemeData dark = ThemeData(
+    useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color(0xFF7F5AF0),
+      seedColor: seed,
       brightness: Brightness.dark,
+      surface: const Color(0xFF0D0D0D),
+      onSurface: Colors.white,
     ),
-    scaffoldBackgroundColor: const Color(0xFF0D0D0D),
+    scaffoldBackgroundColor: const Color(0xFF0B0B0C),
+    textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
     cardTheme: CardThemeData(
-      color: Colors.white.withOpacity(0.05),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       elevation: 0,
+      color: Colors.white.withOpacity(.08),
     ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-    ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: Colors.white.withOpacity(0.05),
-      indicatorColor: Colors.white.withOpacity(0.1),
-      labelTextStyle: MaterialStateProperty.all(
-        const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-      ),
+    listTileTheme: const ListTileThemeData(iconColor: Colors.white70),
+    switchTheme: SwitchThemeData(
+      trackColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? seed : Colors.white24),
+      thumbColor: WidgetStateProperty.all(Colors.white),
     ),
   );
 }

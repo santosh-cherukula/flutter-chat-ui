@@ -1,79 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import '../widgets/chat_tile.dart';
 import '../models/chat_model.dart';
+import '../widgets/glass_card.dart';
 import 'chat_screen.dart';
 
-class ChatListScreen extends StatefulWidget {
+class ChatListScreen extends StatelessWidget {
   const ChatListScreen({super.key});
-
-  @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
-}
-
-class _ChatListScreenState extends State<ChatListScreen> {
-  late List<ChatModel> _chats;
-
-  @override
-  void initState() {
-    super.initState();
-    _chats = List<ChatModel>.from(ChatModel.sampleChats);
+  
+  void _markRead(BuildContext context, int index) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Marked as read')),
+    );
   }
 
-  void _markRead(int index) {
-    setState(() {
-      _chats[index] = _chats[index].copyWith(unreadCount: 0);
-    });
+  void _toggleMute(BuildContext context, int index) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Muted / Unmuted')),
+    );
   }
 
-  void _toggleMute(int index) {
-    final c = _chats[index];
-    setState(() {
-      _chats[index] = c.copyWith(muted: !c.muted);
-    });
-  }
-
-  void _delete(int index) {
-    setState(() {
-      _chats.removeAt(index);
-    });
+  void _delete(BuildContext context, int index) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Chat deleted')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    
+    final chats = ChatModel.sampleChats;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Chats"),
-        actions: const [
-          Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.search)),
-          Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.more_vert)),
+        title: const Text('Chats'),
+        actions: [
+          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
         ],
       ),
       body: ListView.separated(
-        itemCount: _chats.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final chat = _chats[index];
+        padding: const EdgeInsets.all(12),
+        itemCount: chats.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 4),
+        itemBuilder: (_, i) {
+          final c = chats[i];
           return Slidable(
-            key: ValueKey('${chat.name}-$index'),
+            key: ValueKey(c.name),
             startActionPane: ActionPane(
               motion: const DrawerMotion(),
-              extentRatio: 0.5,
+              extentRatio: 0.45,
               children: [
                 SlidableAction(
-                  onPressed: (_) => _markRead(index),
-                  backgroundColor: Colors.green.shade600,
-                  foregroundColor: Colors.white,
+                  onPressed: (ctx) => _markRead(ctx, i),
+                  backgroundColor: Colors.greenAccent,
+                  foregroundColor: Colors.black,
                   icon: Icons.mark_email_read,
                   label: 'Read',
                 ),
                 SlidableAction(
-                  onPressed: (_) => _toggleMute(index),
-                  backgroundColor: Colors.blueGrey,
-                  foregroundColor: Colors.white,
-                  icon: chat.muted ? Icons.volume_up : Icons.volume_off,
-                  label: chat.muted ? 'Unmute' : 'Mute',
+                  onPressed: (ctx) => _toggleMute(ctx, i),
+                  backgroundColor: Colors.orangeAccent,
+                  foregroundColor: Colors.black,
+                  icon: Icons.volume_off,
+                  label: 'Mute',
                 ),
               ],
             ),
@@ -82,33 +69,55 @@ class _ChatListScreenState extends State<ChatListScreen> {
               extentRatio: 0.25,
               children: [
                 SlidableAction(
-                  onPressed: (_) => _delete(index),
-                  backgroundColor: Colors.red.shade700,
+                  onPressed: (ctx) => _delete(ctx, i),
+                  backgroundColor: Colors.redAccent,
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
                   label: 'Delete',
                 ),
               ],
             ),
-            child: ChatTile(
-              chat: chat,
-              onTap: () {
-                _markRead(index); // clear badge on open
-                Navigator.push(
+            child: GlassCard(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(c.avatarUrl),
+                  child: c.avatarUrl.isEmpty ? Text(c.name[0]) : null,
+                ),
+                title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: Text(c.lastMessage, maxLines: 1, overflow: TextOverflow.ellipsis),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(c.time, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+                    if (c.unreadCount > 0)
+                      Container(
+                        margin: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(c.unreadCount.toString(),
+                            style: const TextStyle(color: Colors.white, fontSize: 11)),
+                      ),
+                  ],
+                ),
+                onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => ChatScreen(contactName: chat.name),
-                  ),
-                );
-              },
+                  MaterialPageRoute(builder: (_) => ChatScreen(contactName: c.name)),
+                ),
+              ),
             ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
-        icon: const Icon(Icons.message),
+        icon: const Icon(Icons.add_comment_rounded),
         label: const Text('New chat'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
     );
   }
