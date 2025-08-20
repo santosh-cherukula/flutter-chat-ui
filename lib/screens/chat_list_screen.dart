@@ -31,12 +31,33 @@ class ChatListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chats'),
+        backgroundColor: Colors.transparent,
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
           IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
         ],
       ),
-      body: ListView.separated(
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF000814), Color(0xFF001E3C)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          
+      // Grid overlay
+      CustomPaint(
+        painter: _GridPainter(),
+        size: Size.infinite,
+      ),
+      
+      // Chat list
+      ListView.separated(
         padding: const EdgeInsets.all(12),
         itemCount: chats.length,
         separatorBuilder: (_, __) => const SizedBox(height: 4),
@@ -109,16 +130,72 @@ class ChatListScreen extends StatelessWidget {
                 ),
               ),
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add_comment_rounded),
-        label: const Text('New chat'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
-      ),
+    );
+  },
+),
+  ],
+),
+floatingActionButton: Padding(
+  padding: const EdgeInsets.only(bottom: 80), // Adjust based on nav bar height
+  child: TweenAnimationBuilder<double>(
+    tween: Tween(begin: 0, end: 1),
+    duration: const Duration(milliseconds: 800),
+    curve: Curves.elasticOut,
+    builder: (context, value, child) {
+      return Transform.scale(
+        scale: value,
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+          backgroundColor: Colors.transparent,
+          elevation: 8,
+          extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          label: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0096C7), Color(0xFF00BFFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF9D00FF).withOpacity(0.6),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.add, color: Colors.white),
+                const SizedBox(width: 8),
+                const Text('New Chat', style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+),
     );
   }
+}
+class _GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF00D9FF).withOpacity(0.08)
+      ..strokeWidth = 0.5;
+    const spacing = 40.0;
+    for (var x = 0.0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (var y = 0.0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+  @override bool shouldRepaint(_) => false;
 }

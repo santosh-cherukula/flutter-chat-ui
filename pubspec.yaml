@@ -44,6 +44,8 @@ dependencies:
   flutter_lints: ^5.0.0
   flutter_slidable: ^4.0.0
   google_fonts: ^6.3.0
+  flutter_sound: ^9.2.13
+  emoji_picker_flutter: ^4.3.0 # Or the latest version
 
 dev_dependencies:
   flutter_test:

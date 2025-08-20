@@ -47,12 +47,33 @@ class _LoginScreenState extends State<LoginScreen> {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Center(
+    appBar: AppBar(
+      title: const Text('Login'),
+      centerTitle: true,
+    ),
+    backgroundColor: Colors.transparent, // Required
+    body: Stack(
+      children: [
+        // Background gradient
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF000814), Color(0xFF001E3C)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        
+        // Grid overlay
+        CustomPaint(
+          painter: _GridPainter(),
+          size: Size.infinite,
+        ),
+        
+// Main content
+SafeArea(
+  child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
             child: Padding(
@@ -62,10 +83,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ListView(
                   children: [
                     const SizedBox(height: 24),
-                    Icon(Icons.chat_bubble, size: 64, color: cs.primary),
+                    Image.asset(
+                      'assets/images/new_logo.png',
+                      width: 100,
+                      height: 100,
+                    ),
                     const SizedBox(height: 12),
                     Text(
-                      'Welcome to Chatter',
+                      'Welcome Back!',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
@@ -160,7 +185,25 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
+        ),
+      ],
+    ),
     );
   }
+}
+class _GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF00D9FF).withOpacity(0.08)
+      ..strokeWidth = 0.5;
+    const spacing = 40.0;
+    for (var x = 0.0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (var y = 0.0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+  @override bool shouldRepaint(_) => false;
 }
